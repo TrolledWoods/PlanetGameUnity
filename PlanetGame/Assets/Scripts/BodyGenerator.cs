@@ -43,7 +43,7 @@ public class BodyGenerator : MonoBehaviour {
     
     Mesh CreateRing(float layerSize, int startIncrease, int layers)
     {
-        int nOfVertices = verticesInRing(startIncrease, layers);
+        int nOfVertices = verticesInRing(startIncrease, layers)+1;
         Vector3[] vertices = new Vector3[nOfVertices];
 
         int verticeIndex = 0;
@@ -74,6 +74,7 @@ public class BodyGenerator : MonoBehaviour {
         for (int l = 0; l < layers; l++)
         {
             int verticesInLayer = l == 0 ? 1 : (l + 1) * startIncrease - startIncrease;
+            int verticesInRingUnderCurrentLayer = verticesInRing(startIncrease, l+1);
             int verticesInRingUnderLayer = verticesInRing(startIncrease, l);
             int verticesInSmallerRingUnderLayer = verticesInRing(startIncrease, l - 1);
             
@@ -81,12 +82,12 @@ public class BodyGenerator : MonoBehaviour {
             {
                 for (int i = 0; i < verticesInLayer; i++)
                 {
-                    if (l < layers - 1)
+                    if (false && l < layers - 1)
                     {
-                        int nextI = verticeIndex + verticesInLayer;
+                        int nextI = verticeIndex + verticesInLayer + 1;
 
                         int a = verticeIndex;
-                        int b = i == verticesInLayer - 1 ? verticesInRingUnderLayer : verticeIndex + 1;
+                        int b = i == verticesInLayer ? verticesInRingUnderLayer : verticeIndex + 1;
                         int c = nextI + Mathf.FloorToInt((i) / (l*1f)) + 1;
                         triangles[triangleIndex * 3 + 0] = c;
                         triangles[triangleIndex * 3 + 1] = b;
@@ -96,9 +97,10 @@ public class BodyGenerator : MonoBehaviour {
                     if(l > 0)
                     {
                         int nextI = verticesInSmallerRingUnderLayer + Mathf.CeilToInt(i*1f / (l*1f));
+                        nextI = i == verticesInLayer ? verticesInSmallerRingUnderLayer : nextI;
 
                         int a = verticeIndex;
-                        int b = i == verticesInLayer - 1 ? verticesInRingUnderLayer : verticeIndex + 1;
+                        int b = i == verticesInLayer ? verticesInRingUnderLayer : verticeIndex + 1;
                         int c = nextI;
                         triangles[triangleIndex * 3 + 0] = a;
                         triangles[triangleIndex * 3 + 1] = b;
@@ -122,7 +124,7 @@ public class BodyGenerator : MonoBehaviour {
 
     int verticesInRing(int startIncrease, int layers)
     {
-        return startIncrease * ((layers * (layers + 1)) / 2) - startIncrease * layers + 1;
+        return startIncrease * ((layers * (layers + 1)) / 2) - startIncrease * layers;
     }
     
 }
