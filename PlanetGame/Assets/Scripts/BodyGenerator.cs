@@ -15,13 +15,13 @@ public class BodyGenerator : MonoBehaviour {
     [HideInInspector]
     public Vector3[] vertices;
     Mesh mesh;
-    PolygonCollider2D collider;
+    PolygonCollider2D polyCollider;
 
 	// Use this for initialization
 	void Awake () {
         MeshRenderer renderer = GetComponent<MeshRenderer>();
         MeshFilter filter = GetComponent<MeshFilter>();
-        collider = GetComponent<PolygonCollider2D>();
+        polyCollider = GetComponent<PolygonCollider2D>();
 
         mesh = CreateRing(Size / Rings, Rings, Slices);
 
@@ -50,12 +50,13 @@ public class BodyGenerator : MonoBehaviour {
                 points[i] = new Vector2(magnitude * Mathf.Cos(-angleStep * i), magnitude * Mathf.Sin(-angleStep * i));
             }
 
-            collider.points = points;
+            polyCollider.points = points;
         }
 
-        // Create the vertices array
+        // Create the vertices array and the uv array
         int nOfVertices = verticesInRing(startIncrease, layers)+1;
         Vector3[] vertices = new Vector3[nOfVertices];
+        Vector2[] uv = new Vector2[nOfVertices];
 
         int verticeIndex = 0;
 
@@ -72,6 +73,7 @@ public class BodyGenerator : MonoBehaviour {
             for(int i = 0; i < verticesInLayer; i++)
             {
                 vertices[verticeIndex] = new Vector3(magnitude * Mathf.Cos(-angleStep * i), magnitude * Mathf.Sin(-angleStep * i));
+                uv[verticeIndex] = new Vector2((Mathf.Cos(i / 3f) + 1) / 2, (Mathf.Sin(i / 3f) + 1) / 2);
                 verticeIndex++;
             }
         }
@@ -138,6 +140,7 @@ public class BodyGenerator : MonoBehaviour {
         Mesh mesh = new Mesh();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
+        mesh.uv = uv;
         return mesh;
     }
 

@@ -54,8 +54,8 @@ public abstract class EntityBehaviour : MonoBehaviour {
         if (body != null && rigidBody.velocity.sqrMagnitude <= MinimumLatchVelocitySqr)
         {
             this.body = body;
-            //transform.parent = body.gameObject.transform;
-            //rigidBody.isKinematic = true;
+            transform.parent = body.gameObject.transform;
+            rigidBody.isKinematic = true;
         }
 
         EntityOnCollisionStay2D(other);
