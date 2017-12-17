@@ -14,7 +14,7 @@ public class BodyGenerator : MonoBehaviour {
         MeshRenderer renderer = GetComponent<MeshRenderer>();
         MeshFilter filter = GetComponent<MeshFilter>();
 
-        mesh = CreateRing(1, 4, 3);
+        mesh = CreateRing(1, 6, 5);
 
         vertices = mesh.vertices;
 
@@ -26,8 +26,8 @@ public class BodyGenerator : MonoBehaviour {
     {
         for(int i = 0; i < vertices.Length; i++)
         {
-            //vertices[i].x += Random.Range(-0.01f, 0.01f);
-            //vertices[i].y += Random.Range(-0.01f, 0.01f);
+            vertices[i].x += Random.Range(-0.01f, 0.01f);
+            vertices[i].y += Random.Range(-0.01f, 0.01f);
         }
 
         mesh.vertices = vertices;
@@ -64,8 +64,8 @@ public class BodyGenerator : MonoBehaviour {
             }
         }
 
-        int nOfTriangles = startIncrease * (((layers - 2) * (layers - 1)) / 2 + ((layers - 1) * (layers)) / 2);
-        int[] triangles = new int[nOfTriangles * 3];
+        int nOfTriangles = startIncrease * (((layers-1)*(layers)/2) + ((layers - 2) * (layers-1) / 2));
+        int[] triangles = new int[nOfTriangles*3];
 
         int triangleIndex = 0;
         verticeIndex = 0;
@@ -82,13 +82,14 @@ public class BodyGenerator : MonoBehaviour {
             {
                 for (int i = 0; i < verticesInLayer; i++)
                 {
-                    if (false && l < layers - 1)
+                    if (l < layers - 1)
                     {
-                        int nextI = verticeIndex + verticesInLayer + 1;
+                        // Make a triangle pointing outwards
+                        int nextI = verticesInRingUnderCurrentLayer + i + 2 + Mathf.FloorToInt(i*1.0f / (l));
 
                         int a = verticeIndex;
-                        int b = i == verticesInLayer ? verticesInRingUnderLayer : verticeIndex + 1;
-                        int c = nextI + Mathf.FloorToInt((i) / (l*1f)) + 1;
+                        int b = i == verticesInLayer - 1 ? verticesInRingUnderLayer + 1 : verticeIndex + 1;
+                        int c = nextI;
                         triangles[triangleIndex * 3 + 0] = c;
                         triangles[triangleIndex * 3 + 1] = b;
                         triangles[triangleIndex * 3 + 2] = a;
@@ -96,11 +97,15 @@ public class BodyGenerator : MonoBehaviour {
                     }
                     if(l > 0)
                     {
-                        int nextI = verticesInSmallerRingUnderLayer + Mathf.CeilToInt(i*1f / (l*1f));
-                        nextI = i == verticesInLayer ? verticesInSmallerRingUnderLayer : nextI;
+                        // Make a triangle pointing inwards
+                        int nextI = verticesInSmallerRingUnderLayer + 1 + i - Mathf.FloorToInt(i*1.0f / l*1.0f);
+                        nextI = i == verticesInLayer - 1 ? verticesInSmallerRingUnderLayer + 1 : nextI;
+
+                        // If we are on the first layer, just default to vertice zero
+                        nextI = l == 1 ? 0 : nextI;
 
                         int a = verticeIndex;
-                        int b = i == verticesInLayer ? verticesInRingUnderLayer : verticeIndex + 1;
+                        int b = i >= verticesInLayer - 1 ? verticesInRingUnderLayer + 1 : verticeIndex + 1;
                         int c = nextI;
                         triangles[triangleIndex * 3 + 0] = a;
                         triangles[triangleIndex * 3 + 1] = b;
