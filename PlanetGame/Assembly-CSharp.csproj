@@ -51,8 +51,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\BodyEntityBehaviour.cs" />
      <Compile Include="Assets\Scripts\BodyGenerator.cs" />
+     <Compile Include="Assets\Scripts\Entities\EntityBehaviour.cs" />
+     <Compile Include="Assets\Scripts\Entities\Item.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>E:/John/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

@@ -28,7 +28,6 @@ public class BodyGenerator : MonoBehaviour {
         vertices = mesh.vertices;
 
         filter.mesh = mesh;
-        renderer.material.color = Color.cyan;
     }
 
     void Update()
