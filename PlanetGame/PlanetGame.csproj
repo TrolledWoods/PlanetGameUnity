@@ -219,9 +219,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\BodyEntityBehaviour.cs" />
     <Compile Include="Assets\Scripts\BodyGenerator.cs" />
+    <Compile Include="Assets\Scripts\Entities\EntityBehaviour.cs" />
+    <Compile Include="Assets\Scripts\Entities\ItemEntity.cs" />
+    <Compile Include="Assets\Scripts\Entities\Resource.cs" />
     <Compile Include="Assets\Scripts\OrbitHandler.cs" />
+    <Compile Include="Assets\Scripts\ResourceManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

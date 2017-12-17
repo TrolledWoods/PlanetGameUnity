@@ -4,26 +4,30 @@ using UnityEngine;
 
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshFilter))]
+[RequireComponent(typeof(PolygonCollider2D))]
+[ExecuteInEditMode]
 public class BodyGenerator : MonoBehaviour {
 
     public float Size = 5f;
     public int Rings = 5;
     public int Slices = 6;
-
+    
+    [HideInInspector]
     public Vector3[] vertices;
     Mesh mesh;
+    PolygonCollider2D polyCollider;
 
 	// Use this for initialization
 	void Awake () {
         MeshRenderer renderer = GetComponent<MeshRenderer>();
         MeshFilter filter = GetComponent<MeshFilter>();
+        polyCollider = GetComponent<PolygonCollider2D>();
 
         mesh = CreateRing(Size / Rings, Rings, Slices);
 
         vertices = mesh.vertices;
 
         filter.mesh = mesh;
-        renderer.material.color = Color.cyan;
     }
 
     void Update()
@@ -33,9 +37,26 @@ public class BodyGenerator : MonoBehaviour {
     
     Mesh CreateRing(float layerSize, int startIncrease, int layers)
     {
-        // Create the vertices array
+        // Generate the shape of the collider
+        { // Make a scope for this section
+            int verticesInLayer = (layers) * startIncrease - startIncrease;
+            float magnitude = layerSize * (layers-1);
+            float angleStep = (Mathf.PI * 2) / verticesInLayer;
+
+            Vector2[] points = new Vector2[verticesInLayer];
+            // Create all the points for the collider
+            for(int i = 0; i < verticesInLayer; i++)
+            {
+                points[i] = new Vector2(magnitude * Mathf.Cos(-angleStep * i), magnitude * Mathf.Sin(-angleStep * i));
+            }
+
+            polyCollider.points = points;
+        }
+
+        // Create the vertices array and the uv array
         int nOfVertices = verticesInRing(startIncrease, layers)+1;
         Vector3[] vertices = new Vector3[nOfVertices];
+        Vector2[] uv = new Vector2[nOfVertices];
 
         int verticeIndex = 0;
 
@@ -52,6 +73,7 @@ public class BodyGenerator : MonoBehaviour {
             for(int i = 0; i < verticesInLayer; i++)
             {
                 vertices[verticeIndex] = new Vector3(magnitude * Mathf.Cos(-angleStep * i), magnitude * Mathf.Sin(-angleStep * i));
+                uv[verticeIndex] = new Vector2(Random.Range(0f, 1f), Random.Range(0f, 1f));
                 verticeIndex++;
             }
         }
@@ -118,6 +140,7 @@ public class BodyGenerator : MonoBehaviour {
         Mesh mesh = new Mesh();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
+        mesh.uv = uv;
         return mesh;
     }
 
