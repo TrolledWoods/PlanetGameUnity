@@ -4,19 +4,24 @@ using UnityEngine;
 
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshFilter))]
+[RequireComponent(typeof(PolygonCollider2D))]
+[ExecuteInEditMode]
 public class BodyGenerator : MonoBehaviour {
 
     public float Size = 5f;
     public int Rings = 5;
     public int Slices = 6;
-
+    
+    [HideInInspector]
     public Vector3[] vertices;
     Mesh mesh;
+    PolygonCollider2D collider;
 
 	// Use this for initialization
 	void Awake () {
         MeshRenderer renderer = GetComponent<MeshRenderer>();
         MeshFilter filter = GetComponent<MeshFilter>();
+        collider = GetComponent<PolygonCollider2D>();
 
         mesh = CreateRing(Size / Rings, Rings, Slices);
 
@@ -33,6 +38,22 @@ public class BodyGenerator : MonoBehaviour {
     
     Mesh CreateRing(float layerSize, int startIncrease, int layers)
     {
+        // Generate the shape of the collider
+        { // Make a scope for this section
+            int verticesInLayer = (layers) * startIncrease - startIncrease;
+            float magnitude = layerSize * (layers-1);
+            float angleStep = (Mathf.PI * 2) / verticesInLayer;
+
+            Vector2[] points = new Vector2[verticesInLayer];
+            // Create all the points for the collider
+            for(int i = 0; i < verticesInLayer; i++)
+            {
+                points[i] = new Vector2(magnitude * Mathf.Cos(-angleStep * i), magnitude * Mathf.Sin(-angleStep * i));
+            }
+
+            collider.points = points;
+        }
+
         // Create the vertices array
         int nOfVertices = verticesInRing(startIncrease, layers)+1;
         Vector3[] vertices = new Vector3[nOfVertices];
