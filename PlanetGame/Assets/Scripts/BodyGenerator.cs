@@ -73,7 +73,7 @@ public class BodyGenerator : MonoBehaviour {
             for(int i = 0; i < verticesInLayer; i++)
             {
                 vertices[verticeIndex] = new Vector3(magnitude * Mathf.Cos(-angleStep * i), magnitude * Mathf.Sin(-angleStep * i));
-                uv[verticeIndex] = new Vector2((Mathf.Cos(i / 3f) + 1) / 2, (Mathf.Sin(i / 3f) + 1) / 2);
+                uv[verticeIndex] = new Vector2(Random.Range(0f, 1f), Random.Range(0f, 1f));
                 verticeIndex++;
             }
         }
