@@ -5,7 +5,11 @@ using UnityEngine;
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshFilter))]
 public class BodyGenerator : MonoBehaviour {
-    
+
+    public float Size = 5f;
+    public int Rings = 5;
+    public int Slices = 6;
+
     public Vector3[] vertices;
     Mesh mesh;
 
@@ -14,7 +18,7 @@ public class BodyGenerator : MonoBehaviour {
         MeshRenderer renderer = GetComponent<MeshRenderer>();
         MeshFilter filter = GetComponent<MeshFilter>();
 
-        mesh = CreateRing(1, 6, 5);
+        mesh = CreateRing(Size / Rings, Rings, Slices);
 
         vertices = mesh.vertices;
 
@@ -24,25 +28,12 @@ public class BodyGenerator : MonoBehaviour {
 
     void Update()
     {
-        for(int i = 0; i < vertices.Length; i++)
-        {
-            vertices[i].x += Random.Range(-0.01f, 0.01f);
-            vertices[i].y += Random.Range(-0.01f, 0.01f);
-        }
-
-        mesh.vertices = vertices;
-    }
-
-    void OnDrawGizmos()
-    {
-        for (int i = 0; i < vertices.Length; i++)
-        {
-            Gizmos.DrawWireSphere(vertices[i] + transform.position, 0.2f);
-        }
+        
     }
     
     Mesh CreateRing(float layerSize, int startIncrease, int layers)
     {
+        // Create the vertices array
         int nOfVertices = verticesInRing(startIncrease, layers)+1;
         Vector3[] vertices = new Vector3[nOfVertices];
 
@@ -51,12 +42,13 @@ public class BodyGenerator : MonoBehaviour {
         // Generate the vertices
         for(int l = 0; l < layers; l++)
         {
+            // Calculate the number of vertices in the layer, the radius of the polygon that the vertices are part of, 
+            // and the angle between vertices
             int verticesInLayer = l == 0 ? 1 : (l+1) * startIncrease - startIncrease;
             float magnitude = layerSize * l;
             float angleStep = (Mathf.PI * 2) / verticesInLayer;
-
-            Debug.Log(l + " " + verticesInLayer);
-
+            
+            // Create all the vertices
             for(int i = 0; i < verticesInLayer; i++)
             {
                 vertices[verticeIndex] = new Vector3(magnitude * Mathf.Cos(-angleStep * i), magnitude * Mathf.Sin(-angleStep * i));
@@ -64,6 +56,7 @@ public class BodyGenerator : MonoBehaviour {
             }
         }
 
+        // Create the array of triangles
         int nOfTriangles = startIncrease * (((layers-1)*(layers)/2) + ((layers - 2) * (layers-1) / 2));
         int[] triangles = new int[nOfTriangles*3];
 
@@ -73,6 +66,7 @@ public class BodyGenerator : MonoBehaviour {
         // Generate the triangles
         for (int l = 0; l < layers; l++)
         {
+            // Find some useful properties about the layer
             int verticesInLayer = l == 0 ? 1 : (l + 1) * startIncrease - startIncrease;
             int verticesInRingUnderCurrentLayer = verticesInRing(startIncrease, l+1);
             int verticesInRingUnderLayer = verticesInRing(startIncrease, l);
